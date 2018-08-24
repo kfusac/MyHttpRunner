@@ -25,7 +25,7 @@ class TestApiServerBase:
         cls.httpbin_process = multiprocessing.Process(target=run_httpbin)
         cls.flask_process.start()
         cls.httpbin_process.start()
-        time.sleep(0.1)
+        time.sleep(1)
         cls.api_client = requests.Session()
 
     @classmethod
