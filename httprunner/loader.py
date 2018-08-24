@@ -24,6 +24,10 @@ def load_yaml_file(yaml_file_path):
     with open(yaml_file_path, 'r', encoding='utf-8') as stream:
         yaml_content = yaml.load(stream)
         _check_format(yaml_file_path, yaml_content)
+        if not isinstance(yaml_content, (list, dict)):
+            err_msg = f'YAML file format error: {yaml_file_path}'
+            logger.log_error(err_msg)
+            raise exceptions.FileFormatError(err_msg)
         return yaml_content
 
 
