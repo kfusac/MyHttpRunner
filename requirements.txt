@@ -5,3 +5,4 @@ pytest-html==1.19.0
 pytest-cov==2.5.1
 PyYAML==3.13
 requests==2.19.1
+httpbin==0.2.0
