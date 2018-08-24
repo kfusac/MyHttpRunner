@@ -102,3 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# tests for tests code
+/tests/tests
+/tests/tests/tmp.json
+/tests/tests/tmp.yml
