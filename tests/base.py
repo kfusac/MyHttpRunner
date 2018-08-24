@@ -1,6 +1,5 @@
 import multiprocessing
 import time
-import pytest
 
 import requests
 from tests.api_server import FLASK_APP_PORT, HTTPBIN_HOST, HTTPBIN_PORT

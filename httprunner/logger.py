@@ -1,5 +1,5 @@
-#!/usr/bin/python
-#-*- coding: utf-8 -*-
+# !/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import logging
 import sys
@@ -10,10 +10,10 @@ from colorlog import ColoredFormatter
 init(autoreset=True)
 
 log_colors_config = {
-    'DEBUG':    'cyan',
-    'INFO':     'green',
-    'WARNING':  'yellow',
-    'ERROR':    'red',
+    'DEBUG': 'cyan',
+    'INFO': 'green',
+    'WARNING': 'yellow',
+    'ERROR': 'red',
     'CRITICAL': 'red',
 }
 logger = logging.getLogger("httprunner")
@@ -34,8 +34,7 @@ def setup_logger(log_level, log_file=None):
         u"%(log_color)s%(bg_white)s%(levelname)-8s%(reset)s %(message)s",
         datefmt=None,
         reset=True,
-        log_colors=log_colors_config
-    )
+        log_colors=log_colors_config)
 
     if log_file:
         handler = logging.FileHandler(log_file)
@@ -60,6 +59,7 @@ def color_print(msg, color="WHITE"):
 def log_with_color(level):
     """ log with color by different level
     """
+
     def wrapper(text):
         color = log_colors_config[level.upper()]
         getattr(logger, level.lower())(coloring(text, color))
