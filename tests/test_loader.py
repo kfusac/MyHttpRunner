@@ -147,3 +147,11 @@ class TestFileLoader:
         assert loader.locate_file('tests/data/account.csv',
                                   'confcustom.py') == os.path.join(
                                       'tests', 'confcustom.py')
+
+
+class TestModuleLoader:
+    def test_filter_module_functions(self):
+        module_mapping = loader.load_python_module(loader)
+        functions_dict = module_mapping['functions']
+        assert 'load_python_module' in functions_dict
+        assert 'is_py3' not in functions_dict

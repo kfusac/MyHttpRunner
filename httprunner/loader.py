@@ -6,10 +6,20 @@ import os
 import csv
 import yaml
 import sys
+import importlib
 
-from httprunner import logger, exceptions
+from httprunner import logger, exceptions, validator
 
 sys.path.insert(0, os.getcwd())
+
+project_mapping = {
+    'confcustom': {
+        'variables': {},
+        'functions': {}
+    },
+    'def-api': {},
+    'def-testcase': {}
+}
 
 ###############################################################################
 #   file loader
@@ -173,3 +183,95 @@ def _check_format(file_path, content):
         err_msg = f'Testcase file content is empty: {file_path}'
         logger.log_error(err_msg)
         raise exceptions.FileFormatError(err_msg)
+
+
+###############################################################################
+#   confcustom.py loader
+###############################################################################
+
+
+def load_python_module(module):
+    '''
+    load python module.
+    Args:
+        module: python module custom or build-in module
+    Returns:
+        dict: variables and functions mapping for specified python module
+            {
+                'variables':{},
+                'functions':{}
+            }
+    '''
+
+    confcustom_module = {'variables': {}, 'functions': {}}
+
+    for name, item in vars(module).items():
+        if validator.is_function((name, item)):
+            confcustom_module['functions'][name] = item
+        elif validator.is_variable((name, item)):
+            confcustom_module['variables'][name] = item
+        else:
+            pass
+
+    return confcustom_module
+
+
+def load_builtin_module():
+    '''
+    load built_in module
+    '''
+
+    from httprunner import built_in
+
+    built_in_module = load_python_module(built_in)
+    project_mapping['confcustom']['variables'].update(
+        built_in_module['variables'])
+    project_mapping['confcustom']['functions'].update(
+        built_in_module['functions'])
+
+
+def load_confcustom_module():
+    '''
+    load project confcustom.py mofule and merge with builtin module.
+    confcustom.py should be located in project working directory.
+    variables and functions mapping for confcustom.py
+        {
+            'variables':{},
+            'functions':{}
+        }
+    '''
+
+    imported_module = importlib.import_module('confcustom')
+    confcustom_module = load_python_module(imported_module)
+    project_mapping['confcustom']['variables'].update(
+        confcustom_module['variables'])
+    project_mapping['confcustom']['functions'].update(
+        confcustom_module['functions'])
+
+
+def get_module_item(module_mapping, item_type, item_name):
+    '''
+    get excepted function or variable from module mapping.
+    Args:
+        module_mapping (dict): module mapping with variables and functions.
+            {
+                'variables':{},
+                'functions':{}
+            }
+        item_type (str): 'functions' or 'variables'
+        item_name (str): specified function name or variable name
+    Returns:
+        object: specified variable or function object.
+    Raises:
+        exceptions.FunctionNotFound: If specified function not found in module mapping.
+        exceptions.VariableNotFound: If specified variable not found in module mapping.
+    '''
+    try:
+        return module_mapping[item_type][item_name]
+    except KeyError:
+        err_msg = f'{item_name} not found in confcustom.py module!'
+        logger.log_error(err_msg)
+        if item_type == 'functions':
+            raise exceptions.FunctionNotFound(err_msg)
+        else:
+            raise exceptions.VariableNotFound(err_msg)
