@@ -142,6 +142,7 @@ def locate_file(start_path, file_name):
     Raises:
         exceptions.FileNotFound: If failed to locate file.
     '''
+    start_path = start_path.rstrip('/').rstrip('\\')
     if os.path.isfile(start_path):
         start_dir_path = os.path.dirname(start_path)
     elif os.path.isdir(start_path):

@@ -125,3 +125,25 @@ class TestFileLoader:
 
         files = loader.load_folder_files(file2, recursive=False)
         assert files == []
+
+    def test_locate_file(self):
+        with pytest.raises(exceptions.FileNotFound):
+            loader.locate_file(os.getcwd(), 'confcustom.py')
+
+        with pytest.raises(exceptions.FileNotFound):
+            loader.locate_file('', 'confcustom.py')
+
+        start_path = os.path.join(os.getcwd(), 'tests')
+        assert loader.locate_file(start_path, 'confcustom.py') == os.path.join(
+            os.getcwd(), 'tests', 'confcustom.py')
+
+        assert loader.locate_file('tests/', 'confcustom.py') == os.path.join(
+            'tests', 'confcustom.py')
+        assert loader.locate_file('tests', 'confcustom.py') == os.path.join(
+            'tests', 'confcustom.py')
+        assert loader.locate_file('tests/base.py',
+                                  'confcustom.py') == os.path.join(
+                                      'tests', 'confcustom.py')
+        assert loader.locate_file('tests/data/account.csv',
+                                  'confcustom.py') == os.path.join(
+                                      'tests', 'confcustom.py')
