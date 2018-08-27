@@ -125,3 +125,11 @@ class TestFileLoader:
 
         files = loader.load_folder_files(file2, recursive=False)
         assert files == []
+
+
+class TestModuleLoader:
+    def test_filter_module_functions(self):
+        module_mapping = loader.load_python_module(loader)
+        functions_dict = module_mapping['functions']
+        assert 'load_python_module' in functions_dict
+        assert 'is_py3' not in functions_dict
