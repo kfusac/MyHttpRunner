@@ -8,7 +8,7 @@ import yaml
 import sys
 import importlib
 
-from httprunner import logger, exceptions, validator
+from httprunner import logger, exceptions, validator, utils
 
 sys.path.insert(0, os.getcwd())
 
@@ -17,9 +17,13 @@ project_mapping = {
         'variables': {},
         'functions': {}
     },
+    'env': {},
     'def-api': {},
     'def-testcase': {}
 }
+
+testcases_cache_mapping = {}
+project_working_directory = os.getcwd()
 
 ###############################################################################
 #   file loader
@@ -172,6 +176,45 @@ def locate_file(start_path, file_name):
 
     # locate recursive upward
     return locate_file(os.path.dirname(start_dir_path), file_name)
+
+
+def load_env_file():
+    '''
+    load .env file, .env file should be located in project working directory.
+    Returns:
+        dict: enviroment variables mapping
+            {
+                'username':'testuser',
+                'password':'123456',
+                'PROJECT_KEY':'ABCDEFGH'
+            }
+    Raises:
+        exceptions.FileFormatError: If env file format is invalid.
+    '''
+
+    path = os.path.join(project_working_directory, '.env')
+    if not os.path.isfile(path):
+        logger.log_debug(
+            f'.env file not exist in: {project_working_directory}')
+        return {}
+
+    logger.log_info(f'Loading enviroment variables from {path}')
+    env_variables_mapping = {}
+    with open(path, 'r', encoding='utf-8') as fp:
+        for line in fp:
+            if '=' in line:
+                variable, value = line.split('=')
+            elif ':' in line:
+                variable, value = line.split(':')
+            else:
+                raise exceptions.FileFormatError('.env format error')
+
+            env_variables_mapping[variable.strip()] = value.strip()
+
+    project_mapping['env'] = env_variables_mapping
+    utils.set_os_environ(env_variables_mapping)
+
+    return env_variables_mapping
 
 
 def _check_format(file_path, content):

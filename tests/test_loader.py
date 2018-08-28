@@ -148,6 +148,18 @@ class TestFileLoader:
                                   'confcustom.py') == os.path.join(
                                       'tests', 'confcustom.py')
 
+    def test_load_dot_env_file(self):
+        loader.project_working_directory = os.path.join(os.getcwd(), 'tests')
+        env_variables_mapping = loader.load_env_file()
+        assert 'PROJECT_KEY' in env_variables_mapping
+        assert env_variables_mapping['UserName'] == 'testuser'
+        assert os.environ['password'] == '123456'
+
+    def test_load_env_path_not_exist(self):
+        loader.project_working_directory = os.path.join(
+            os.getcwd(), 'tests', 'data')
+        loader.load_env_file()
+
 
 class TestModuleLoader:
     def test_filter_module_functions(self):

@@ -1,7 +1,20 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 import itertools
+import os
 from collections import OrderedDict
+
+from httprunner import logger
+
+
+def set_os_environ(variables_mapping):
+    '''
+    set variables mapping to os.environ
+    '''
+
+    for variable in variables_mapping:
+        os.environ[variable] = variables_mapping[variable]
+        logger.log_debug(f'Loaded variable: {variable}')
 
 
 def gen_cartesian_product(*args):
