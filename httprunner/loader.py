@@ -98,7 +98,7 @@ def load_file(file_path):
     if file_suffix == '.json':
         return load_json_file(file_path)
     elif file_suffix in ['.yaml', '.yml']:
-        return load_json_file(file_path)
+        return load_yaml_file(file_path)
     elif file_suffix == '.csv':
         return load_csv_file(file_path)
     else:
@@ -821,7 +821,7 @@ def load_project_tests(test_path):
         project_working_directory = os.path.dirname(confcustom_path)
 
         # load confcustom.py
-        sys.path.index(0, project_working_directory)
+        sys.path.insert(0, project_working_directory)
         load_confcustom_module()
     else:
         # debugtalk.py not found, use os.getcwd() as PWD.

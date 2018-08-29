@@ -4,7 +4,7 @@
 import os
 import pytest
 
-from httprunner import exceptions, loader
+from httprunner import exceptions, loader, validator
 
 
 class TestFileLoader:
@@ -167,3 +167,55 @@ class TestModuleLoader:
         functions_dict = module_mapping['functions']
         assert 'load_python_module' in functions_dict
         assert 'is_py3' not in functions_dict
+
+    def test_load_confcustom_module(self):
+        loader.load_project_tests(os.path.join(os.getcwd(), 'httprunner'))
+        imported_module_items = loader.project_mapping['confcustom']
+        assert 'equals' in imported_module_items['functions']
+        assert 'SECRET_KEY' not in imported_module_items['variables']
+        assert 'alter_response' not in imported_module_items['functions']
+
+        loader.load_project_tests(os.path.join(os.getcwd(), 'tests'))
+        imported_module_items = loader.project_mapping['confcustom']
+        assert imported_module_items['variables'][
+            'SECRET_KEY'] == 'MyHttpRunner'
+        assert 'hook_print' in imported_module_items['functions']
+        is_status_code_200 = imported_module_items['functions'][
+            'is_status_code_200']
+        assert is_status_code_200(200)
+        assert not is_status_code_200(300)
+
+    def test_get_module_item_functions(self):
+        from httprunner import utils
+        module_mapping = loader.load_python_module(utils)
+
+        get_uniform_comparator = loader.get_module_item(
+            module_mapping, 'functions', 'get_uniform_comparator')
+        assert validator.is_function(("get_uniform_comparator",
+                                      get_uniform_comparator))
+        assert get_uniform_comparator('==') == 'equals'
+
+        with pytest.raises(exceptions.FunctionNotFound):
+            loader.get_module_item(module_mapping, 'functions', 'gen_md4')
+
+    def test_get_module_item_variables(self):
+        from tests import confcustom
+        module_mapping = loader.load_python_module(confcustom)
+
+        SECRET_KEY = loader.get_module_item(module_mapping, 'variables',
+                                            'SECRET_KEY')
+        assert validator.is_variable(('SECRET_KEY', SECRET_KEY))
+        assert SECRET_KEY == 'MyHttpRunner'
+
+    def test_locate_confcustom_py(self):
+        confcustom_path = loader.locate_confcustom_py(
+            'tests/data/demo_testcase.yml')
+        assert confcustom_path == os.path.join(os.getcwd(), 'tests',
+                                               'confcustom.py')
+
+        confcustom_path = loader.locate_confcustom_py('tests/base.py')
+        assert confcustom_path == os.path.join(os.getcwd(), 'tests',
+                                               'confcustom.py')
+
+        confcustom_path = loader.locate_confcustom_py('httprunner/__init__py')
+        assert confcustom_path is None
