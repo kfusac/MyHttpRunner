@@ -386,7 +386,7 @@ def _load_test_file(file_path):
         elif key == 'test':
 
             def extend_api_definition(block):
-                ref_call = block("api")
+                ref_call = block["api"]
                 def_block = _get_block_by_name(ref_call, 'def-api')
                 _extend_block(block, def_block)
 
@@ -860,7 +860,7 @@ def load_testcases(path):
         return testcases_list
 
     if not os.path.isabs(path):
-        path = os.path.join(project_working_directory, path)
+        path = os.path.join(os.getcwd(), path)
 
     if path in testcases_cache_mapping:
         return testcases_cache_mapping[path]
