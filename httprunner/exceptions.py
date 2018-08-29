@@ -3,6 +3,31 @@
 
 from json import JSONDecodeError
 
+
+###############################################################################
+#   failure type exceptions
+#   these exceptions will mark test as failure
+###############################################################################
+class MyBaseFailure(Exception):
+    pass
+
+
+class VaildationFailure(MyBaseFailure):
+    pass
+
+
+class ExtractFailure(MyBaseFailure):
+    pass
+
+
+class SetupHooksFailure(MyBaseFailure):
+    pass
+
+
+class TeardownHooksFailure(MyBaseFailure):
+    pass
+
+
 ###############################################################################
 #   error type exceptions
 #   there exceptions will mark test a error
