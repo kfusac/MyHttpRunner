@@ -148,6 +148,9 @@ class TestFileLoader:
                                   'confcustom.py') == os.path.join(
                                       'tests', 'confcustom.py')
 
+    @pytest.mark.skipif(
+        not os.path.exists(os.path.join(os.getcwd(), 'tests', '.env')),
+        reason='.env not exist')
     def test_load_dot_env_file(self):
         loader.project_working_directory = os.path.join(os.getcwd(), 'tests')
         env_variables_mapping = loader.load_env_file()
@@ -489,4 +492,6 @@ class TestSuiteLoader:
             'SECRET_KEY'] == 'MyHttpRunner'
         assert 'get_token' in project_mapping['def-api']
         assert 'setup_and_reset' in project_mapping['def-testcase']
+        if not os.path.exists(os.path.join(os.getcwd(), 'tests', '.env')):
+            pytest.skip('.env not exists')
         assert project_mapping['env']['PROJECT_KEY'] == 'ABCDEFGH'
