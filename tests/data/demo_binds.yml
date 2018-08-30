@@ -1,10 +1,10 @@
 bind_variables:
     variables:
-        - TOKEN: "debugtalk"
+        - TOKEN: "confcustom"
         - token: $TOKEN
 
 builtin_functions:
     variables:
-        - length: ${len(debugtalk)}
+        - length: ${len(confcustom)}
         - smallest: ${min(2, 3, 8)}
         - largest: ${max(2, 3, 8)}

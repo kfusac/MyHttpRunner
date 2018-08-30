@@ -74,7 +74,7 @@ def convert_mappinglist_to_OrderedDict(mapping_list):
 
     ordered_dict = OrderedDict()
     for map_dict in mapping_list:
-        OrderedDict.update(map_dict)
+        ordered_dict.update(map_dict)
 
     return ordered_dict
 

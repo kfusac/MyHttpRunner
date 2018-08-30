@@ -121,3 +121,14 @@ def startswith(check_value, expect_value):
 
 def endswith(check_value, expect_value):
     assert str(check_value).endswith(str(expect_value))
+
+
+###############################################################################
+#   built-in hook
+###############################################################################
+def sleep_N_secs(n_secs):
+    '''
+    sleep n seconds
+    '''
+
+    time.sleep(n_secs)

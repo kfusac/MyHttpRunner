@@ -163,7 +163,7 @@ class Context:
 
         return validator
 
-    def _do_validator(self, validator_dict):
+    def _do_validation(self, validator_dict):
         '''
         validator with functions
         Args:
@@ -230,7 +230,7 @@ class Context:
                 parser.parse_validator(vaildator), resp_obj)
 
             try:
-                self._do_validator(evaluated_validator)
+                self._do_validation(evaluated_validator)
             except exceptions.VaildationFailure:
                 validate_pass = False
 

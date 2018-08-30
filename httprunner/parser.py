@@ -5,7 +5,7 @@ import ast
 import os
 import re
 
-from httprunner import exceptions, utils
+from httprunner import exceptions, utils, logger
 
 variable_regexp = r"\$([\w_]+)"
 function_regexp = r"\$\{([\w_]+\([\$\w\.\-/_ =,]*\))\}"
@@ -393,7 +393,23 @@ def parse_string_variables(content, variables_mapping):
     '''
     variables_list = extract_variables(content)
     for variable_name in variables_list:
-        variable_value = get_mapping_variable(variable_name, variables_mapping)
+        try:
+            variable_value = get_mapping_variable(variable_name,
+                                                  variables_mapping)
+        except exceptions.VariableNotFound:
+            content_match = []
+            for key, value in variables_mapping.items():
+                if variable_name.startswith(key):
+                    name = key
+                    content_match.append({key: value})
+            if len(content_match) == 1:
+                variable_name = name
+                variable_value = get_mapping_variable(variable_name,
+                                                      variables_mapping)
+            else:
+                err_msg = f'{variable_name} match too many varaibles, {content_match}'
+                logger.log_error(err_msg)
+                raise exceptions.VariableNotFound(err_msg)
 
         if f'${variable_name}' == content:
             # content is a variable
